@@ -1,19 +1,18 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
-    name="boloco",  # Name of your package
-    version="0.1.0",  # Version of your package
+    name="boloco",
+    version="0.1.0",
     description="A script for generating Boolean logic expressions and datasets.",
     author="Your Name",
     author_email="your.email@example.com",
-    url="https://github.com/yourusername/boloco",  # Your GitHub repo
-    py_modules=["boloco"],  # Name of your script without `.py`
-    install_requires=[
-        "numpy",  # Add dependencies here if your script uses them
-    ],
+    url="https://github.com/yourusername/boloco",
+    packages=find_packages(),
+    py_modules=["boloco"],
+    install_requires=["numpy"],
     entry_points={
         "console_scripts": [
-            "boloco=boloco:main",  # Command-line tool entry point
+            "boloco=boloco:main",
         ]
     },
     classifiers=[
@@ -21,5 +20,11 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires=">=3.6",  # Specify the Python version requirement
+    python_requires=">=3.6",
+    package_data={
+        "boloco": [
+            "data/**/*.txt"
+        ],  # Include all .txt files in `data` and its subdirectories
+    },
+    include_package_data=True,
 )

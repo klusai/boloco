@@ -305,6 +305,96 @@ def load_dataset(data_dir="data", dataset_class_name="mt5"):
     return vocab, to_array(train_set), to_array(validate_set), to_array(test_set)
 
 
+def load_dataset_v2(data_dir="data", dataset_class_name="mt5"):
+    """
+    Load datasets from the project root first, and only search the boloco package if no matches are found.
+
+    Args:
+        data_dir (str): The directory where the datasets are saved.
+        dataset_class_name (str): The class name of the dataset (e.g., mt5).
+
+    Returns:
+        tuple: (vocab, train_set, validate_set, test_set)
+    """
+
+    def load_set(set_name, base_dir):
+        """
+        Load a specific dataset split (train, validate, or test) from the given base directory.
+
+        Args:
+            set_name (str): The name of the set to load (e.g., 'train').
+            base_dir (str): The base directory to search.
+
+        Returns:
+            list: A list of lines from the dataset file, or None if not found.
+        """
+        # Construct search pattern
+        pattern = os.path.join(
+            base_dir, dataset_class_name, "**", f"boloco-{set_name}-*.txt"
+        )
+        matching_files = glob.glob(pattern, recursive=True)
+
+        if matching_files:
+            # Use the first matching file
+            with open(matching_files[0], "r", encoding="utf-8") as f:
+                return [line.strip() for line in f if line.strip()]
+        return None
+
+    def to_array(dataset):
+        """
+        Convert a dataset (list of lines) into a NumPy array of token indices.
+
+        Args:
+            dataset (list): The dataset containing lines of tokens.
+
+        Returns:
+            numpy.ndarray: The dataset as a NumPy array of token indices.
+        """
+        return np.array(
+            [vocab[w] for line in dataset for w in line.split()],
+            dtype=np.uint32,
+        )
+
+    # First search in the project directory
+    project_dir = os.getcwd()
+    train_set = load_set("train", project_dir)
+    validate_set = load_set("validate", project_dir)
+    test_set = load_set("test", project_dir)
+
+    # If no files were found in the project directory, search in the package data
+    if not (train_set and validate_set and test_set):
+        from pkg_resources import resource_filename
+
+        package_data_dir = resource_filename("boloco", data_dir)
+        train_set = train_set or load_set("train", package_data_dir)
+        validate_set = validate_set or load_set("validate", package_data_dir)
+        test_set = test_set or load_set("test", package_data_dir)
+
+    # If still missing any dataset, raise an error
+    if not (train_set and validate_set and test_set):
+        missing_sets = [
+            name
+            for name, dataset in zip(
+                ["train", "validate", "test"], [train_set, validate_set, test_set]
+            )
+            if not dataset
+        ]
+        raise FileNotFoundError(
+            f"Missing dataset files for the following sets: {', '.join(missing_sets)}."
+        )
+
+    # Build the vocabulary from all dataset splits
+    vocab = set()
+    for ds in [train_set, validate_set, test_set]:
+        for expr in ds:
+            vocab.update(expr.split())
+
+    vocab = {token: idx for idx, token in enumerate(sorted(vocab))}
+
+    # Convert datasets to arrays
+    return vocab, to_array(train_set), to_array(validate_set), to_array(test_set)
+
+
 def format_output_filename(
     max_tokens,
     seed,
