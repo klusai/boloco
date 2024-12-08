@@ -15,7 +15,7 @@ ERROR_TOKEN = "<err/>"  # Error token for invalid expressions
 INVALID_TOKEN = "<inv/>"  # Invalid token
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("boloco/boloco.py")
+logger = logging.getLogger("boloco")
 
 
 def generate_logic_expressions(n, max_not_depth=2, max_paren_depth=2):
@@ -259,7 +259,7 @@ def save_dataset(dataset, name):
     logger.info(f"Saved dataset in {time.time() - start_time:.2f} seconds.")
 
 
-def load_dataset(data_dir="boloco/data", dataset_class_name="mt5"):
+def load_dataset(data_dir="data", dataset_class_name="mt5"):
     """
     Load datasets from the specified directory and dataset class name.
 
