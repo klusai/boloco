@@ -1,6 +1,5 @@
 # directories
 .venv/
-data/
 __pycache__/
 
 # files
