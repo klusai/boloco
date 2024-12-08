@@ -261,52 +261,6 @@ def save_dataset(dataset, name):
 
 def load_dataset(data_dir="data", dataset_class_name="mt5"):
     """
-    Load datasets from the specified directory and dataset class name.
-
-    Args:
-        data_dir (str): The directory where the datasets are saved.
-        dataset_class_name (str): The class name of the dataset.
-
-    Returns:
-        tuple: (vocab, train_set, validate_set, test_set)
-    """
-
-    def load_set(set_name):
-        pattern = os.path.join(
-            data_dir, dataset_class_name, "**", f"boloco-{set_name}-*.txt"
-        )
-        matching_files = glob.glob(pattern)
-        if not matching_files:
-            raise FileNotFoundError(
-                f"No matching files found for '{set_name}' set at {pattern}."
-            )
-        with open(matching_files[0], "r", encoding="utf-8") as f:
-            return [line.strip() for line in f if line.strip()]
-
-    def to_array(dataset):
-        return np.array(
-            [vocab[w] for line in dataset for w in line.strip().split(" ")],
-            dtype=np.uint32,
-        )
-
-    try:
-        train_set = load_set("train")
-        validate_set = load_set("validate")
-        test_set = load_set("test")
-    except FileNotFoundError as e:
-        raise FileNotFoundError(f"Error loading datasets: {e}")
-
-    vocab = set()
-    for ds in [train_set, validate_set, test_set]:
-        for expr in ds:
-            vocab.update(expr.split())
-
-    vocab = {token: idx for idx, token in enumerate(sorted(vocab))}
-    return vocab, to_array(train_set), to_array(validate_set), to_array(test_set)
-
-
-def load_dataset_v2(data_dir="data", dataset_class_name="mt5"):
-    """
     Load datasets from the project root first, and only search the boloco package if no matches are found.
 
     Args:
