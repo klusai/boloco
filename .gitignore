@@ -1,5 +1,43 @@
-# directories
-.venv/
+# Python
 __pycache__/
+*.py[cod]
+*$py.class
+*.so
 
-# files
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Testing
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Poetry virtual environments
+.venv/
+
+# Development tools
+.mypy_cache/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# BoLoCo generated content
+test_output/
+demo_output/
+quick_demo/
+final_test/
+test_cleaned/
+test_refactored/
+demo_final/
+poetry_test/
+*.jsonl
+dataset*.json
