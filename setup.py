@@ -32,8 +32,7 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "boloco=boloco.boloco:main",  # Legacy CLI
-            "boloco-enhanced=boloco.cli:main",  # Enhanced CLI
+            "boloco=boloco.cli:main",  # Enhanced CLI
         ]
     },
     classifiers=[

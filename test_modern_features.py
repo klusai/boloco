@@ -44,31 +44,12 @@ def test_enhanced_example_creation():
     assert "created_at" in example_dict
     assert example_dict["expression"] == "T OR F"
     
-    # Test legacy format conversion
-    legacy_format = example.to_legacy_format()
-    assert legacy_format == "<s> T OR F <eval/> T </s>"
+
     
     print("✅ BoLoCoExample tests passed!")
 
 
-def test_legacy_conversion():
-    """Test converting legacy format to enhanced."""
-    print("🧪 Testing legacy format conversion...")
-    
-    from boloco.enhanced import BoLoCoExample
-    
-    # Test legacy format parsing
-    legacy_line = "<s> ( T AND F ) <eval/> F </s>"
-    example = BoLoCoExample.from_legacy_format(legacy_line)
-    
-    assert example.expression == "( T AND F )"
-    assert example.evaluation == "F"
-    assert example.tokens == ["(", "T", "AND", "F", ")"]
-    assert example.metadata["token_count"] == 5
-    assert example.metadata["operator_count"] == 1
-    assert example.metadata["nesting_depth"] == 1
-    
-    print("✅ Legacy conversion tests passed!")
+
 
 
 def test_enhanced_dataset():
@@ -140,10 +121,7 @@ def test_file_operations():
         dataset.save_jsonl(jsonl_path, split="train")
         assert (temp_path / "test_train.jsonl").exists()
         
-        # Test legacy format export
-        legacy_dir = temp_path / "legacy"
-        dataset.save_legacy_format(legacy_dir)
-        assert (legacy_dir / "boloco-train-legacy.txt").exists()
+
         
         # Test dataset card creation
         card_path = temp_path / "README.md"
@@ -247,7 +225,6 @@ def run_all_tests():
     
     tests = [
         test_enhanced_example_creation,
-        test_legacy_conversion,
         test_enhanced_dataset,
         test_file_operations,
         test_huggingface_integration,
@@ -343,9 +320,7 @@ def demo_enhanced_features():
         dataset.save_jsonl(temp_path / "demo.jsonl")
         print("  ✓ JSONL format exported")
         
-        # Legacy format
-        dataset.save_legacy_format(temp_path / "legacy")
-        print("  ✓ Legacy format exported")
+
         
         # Dataset card
         dataset.create_dataset_card(temp_path / "README.md")

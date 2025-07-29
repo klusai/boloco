@@ -5,7 +5,7 @@ This module provides an enhanced command-line interface with:
 - Rich output formatting
 - Progress bars and status indicators  
 - Input validation and error handling
-- Support for both legacy and enhanced formats
+- Support for JSON/JSONL and HuggingFace formats
 - HuggingFace integration
 """
 
@@ -30,10 +30,175 @@ except ImportError:
     Console = Progress = Table = Panel = Text = None
     rprint = print
 
-from .enhanced import BoLoCoDataset, BoLoCoExample, convert_legacy_to_enhanced
-from .boloco import generate_logic_expressions, split_dataset, generate_error_expressions
+from .enhanced import BoLoCoDataset, BoLoCoExample
 
 logger = logging.getLogger("boloco.cli")
+
+
+def generate_logic_expressions(max_tokens):
+    """Generate valid Boolean logic expressions."""
+    import random
+    
+    # Basic tokens
+    literals = ["T", "F"]
+    operators = ["AND", "OR", "NOT"]
+    
+    def generate_single_expression(target_tokens):
+        """Generate a single expression with approximately target_tokens tokens."""
+        if target_tokens == 1:
+            return random.choice(literals)
+        
+        if target_tokens == 2:
+            if random.random() < 0.5:
+                return f"NOT {random.choice(literals)}"
+            else:
+                return random.choice(literals)
+        
+        # For longer expressions, build recursively
+        if random.random() < 0.3:  # Use parentheses sometimes
+            left_tokens = max(1, target_tokens // 2 - 1)
+            right_tokens = target_tokens - left_tokens - 3  # -3 for operator and parentheses
+            if right_tokens < 1:
+                right_tokens = 1
+                left_tokens = target_tokens - right_tokens - 3
+            
+            if left_tokens >= 1 and right_tokens >= 1:
+                left = generate_single_expression(left_tokens)
+                right = generate_single_expression(right_tokens)
+                op = random.choice(["AND", "OR"])
+                return f"( {left} {op} {right} )"
+        
+        # Binary operation without parentheses
+        left_tokens = max(1, target_tokens // 2)
+        right_tokens = target_tokens - left_tokens - 1  # -1 for operator
+        if right_tokens < 1:
+            right_tokens = 1
+            left_tokens = target_tokens - right_tokens - 1
+        
+        if left_tokens >= 1 and right_tokens >= 1:
+            left = generate_single_expression(left_tokens)
+            right = generate_single_expression(right_tokens)
+            op = random.choice(["AND", "OR"])
+            return f"{left} {op} {right}"
+        
+        return random.choice(literals)
+    
+    expressions = set()
+    attempts = 0
+    max_attempts = 1000
+    
+    while len(expressions) < 100 and attempts < max_attempts:
+        attempts += 1
+        target_tokens = random.randint(1, max_tokens)
+        expr = generate_single_expression(target_tokens)
+        
+        # Validate token count
+        actual_tokens = len(expr.split())
+        if actual_tokens <= max_tokens:
+            expressions.add(expr)
+    
+    return list(expressions)
+
+
+def generate_error_expressions(valid_expressions, num_errors):
+    """Generate erroneous Boolean logic expressions."""
+    import random
+    
+    if num_errors == 0:
+        return []
+    
+    errors = []
+    operators = ["AND", "OR", "NOT"]
+    literals = ["T", "F"]
+    
+    for _ in range(num_errors):
+        if random.random() < 0.5 and valid_expressions:
+            # Corrupt a valid expression
+            expr = random.choice(valid_expressions)
+            tokens = expr.split()
+            
+            if len(tokens) > 1:
+                # Random corruption strategies
+                corruption = random.choice([
+                    "duplicate_operator",
+                    "missing_operand", 
+                    "invalid_token",
+                    "unbalanced_parens"
+                ])
+                
+                if corruption == "duplicate_operator":
+                    # Add extra operator
+                    pos = random.randint(0, len(tokens))
+                    tokens.insert(pos, random.choice(operators))
+                elif corruption == "missing_operand":
+                    # Remove a literal
+                    literal_indices = [i for i, t in enumerate(tokens) if t in literals]
+                    if literal_indices:
+                        tokens.pop(random.choice(literal_indices))
+                elif corruption == "invalid_token":
+                    # Replace with invalid token
+                    pos = random.randint(0, len(tokens) - 1)
+                    tokens[pos] = "INVALID"
+                elif corruption == "unbalanced_parens":
+                    # Add unmatched parenthesis
+                    tokens.append("(")
+                
+                errors.append(" ".join(tokens))
+            else:
+                errors.append("INVALID")
+        else:
+            # Generate completely invalid expression
+            invalid_patterns = [
+                "AND OR",
+                "NOT",
+                "T AND",
+                "OR F",
+                "( T",
+                "F )",
+                "INVALID TOKEN",
+                "T AND AND F"
+            ]
+            errors.append(random.choice(invalid_patterns))
+    
+    return errors
+
+
+def eval_expression(expr):
+    """Evaluate a Boolean logic expression."""
+    try:
+        # Replace tokens with Python equivalents
+        expr = expr.replace("T", "True").replace("F", "False")
+        expr = expr.replace("AND", "and").replace("OR", "or").replace("NOT", "not")
+        
+        # Basic validation - check for valid tokens only
+        import re
+        valid_pattern = r'^[\s\(\)TrueFalseandondt]+$'
+        if not re.match(valid_pattern, expr):
+            return None
+            
+        # Evaluate safely
+        result = eval(expr)
+        return result if isinstance(result, bool) else None
+    except:
+        return None
+
+
+def split_dataset(data, train_ratio=0.7, validate_ratio=0.15, test_ratio=0.15):
+    """Split dataset into train, validation, and test sets."""
+    import random
+    
+    data = list(data)
+    random.shuffle(data)
+    
+    total = len(data)
+    train_size = int(total * train_ratio)
+    val_size = int(total * validate_ratio)
+    
+    train_data = data[:train_size]
+    val_data = data[train_size:train_size + val_size]
+    test_data = data[train_size + val_size:]
+    
+    return train_data, val_data, test_data
 
 
 class BoLoCoGenerator:
@@ -80,9 +245,7 @@ class BoLoCoGenerator:
                 # Generate valid expressions
                 progress.update(task, description="Generating valid expressions...", advance=20)
                 valid_expressions = list(generate_logic_expressions(
-                    self.config["max_tokens"],
-                    self.config.get("max_not_depth", 2),
-                    self.config.get("max_paren_depth", 2)
+                    self.config["max_tokens"]
                 ))
                 
                 # Generate errors
@@ -133,9 +296,7 @@ class BoLoCoGenerator:
         else:
             print("Generating valid expressions...")
             valid_expressions = list(generate_logic_expressions(
-                self.config["max_tokens"],
-                self.config.get("max_not_depth", 2),
-                self.config.get("max_paren_depth", 2)
+                self.config["max_tokens"]
             ))
             
             print(f"Generated {len(valid_expressions)} valid expressions")
@@ -184,8 +345,6 @@ class BoLoCoGenerator:
     
     def _evaluate_expression(self, expr: str) -> bool:
         """Evaluate a Boolean expression."""
-        # Import eval_expression from boloco module
-        from .boloco import eval_expression
         result = eval_expression(expr)
         return result if isinstance(result, bool) else False
     
@@ -322,8 +481,7 @@ def cmd_generate(args):
         if args.format in ["jsonl", "all"]:
             dataset.save_jsonl(output_dir / "dataset.jsonl")
         
-        if args.format in ["legacy", "all"]:
-            dataset.save_legacy_format(output_dir / "legacy")
+
         
         if args.format in ["hf", "all"]:
             hf_dataset = dataset.to_huggingface_dataset()
@@ -349,107 +507,7 @@ def cmd_generate(args):
         sys.exit(1)
 
 
-def cmd_convert(args):
-    """Convert legacy format to enhanced format."""
-    try:
-        legacy_file = Path(args.input_file)
-        if not legacy_file.exists():
-            raise FileNotFoundError(f"Input file not found: {legacy_file}")
-        
-        output_path = Path(args.output_path)
-        
-        if RICH_AVAILABLE:
-            rprint(f"[cyan]Converting[/cyan] {legacy_file} → {output_path}")
-        else:
-            print(f"Converting {legacy_file} → {output_path}")
-        
-        dataset = convert_legacy_to_enhanced(legacy_file, output_path, args.format)
-        
-        if args.create_card:
-            card_path = output_path.parent / "README.md"
-            dataset.create_dataset_card(card_path)
-            
-        if RICH_AVAILABLE:
-            rprint(f"[bold green]✓[/bold green] Conversion complete!")
-        else:
-            print("✓ Conversion complete!")
-            
-    except Exception as e:
-        if RICH_AVAILABLE:
-            rprint(f"[bold red]Error:[/bold red] {e}")
-        else:
-            print(f"Error: {e}")
-        sys.exit(1)
 
-
-def cmd_validate(args):
-    """Validate a dataset file."""
-    try:
-        file_path = Path(args.file_path)
-        if not file_path.exists():
-            raise FileNotFoundError(f"File not found: {file_path}")
-        
-        if file_path.suffix == ".json":
-            with open(file_path, "r") as f:
-                data = json.load(f)
-            
-            # Basic validation
-            required_fields = ["name", "version", "splits"]
-            for field in required_fields:
-                if field not in data:
-                    raise ValueError(f"Missing required field: {field}")
-            
-            if RICH_AVAILABLE:
-                rprint(f"[bold green]✓[/bold green] Valid BoLoCo Enhanced dataset")
-                rprint(f"  Name: {data['name']}")
-                rprint(f"  Version: {data['version']}")
-                rprint(f"  Splits: {list(data['splits'].keys())}")
-            else:
-                print("✓ Valid BoLoCo Enhanced dataset")
-                print(f"  Name: {data['name']}")
-                print(f"  Version: {data['version']}")
-                print(f"  Splits: {list(data['splits'].keys())}")
-                
-        elif file_path.suffix == ".txt":
-            # Validate legacy format
-            valid_lines = 0
-            invalid_lines = 0
-            
-            with open(file_path, "r") as f:
-                for line_num, line in enumerate(f, 1):
-                    line = line.strip()
-                    if not line:
-                        continue
-                    
-                    try:
-                        BoLoCoExample.from_legacy_format(line)
-                        valid_lines += 1
-                    except ValueError:
-                        invalid_lines += 1
-                        if args.verbose:
-                            print(f"Invalid line {line_num}: {line}")
-            
-            if RICH_AVAILABLE:
-                if invalid_lines == 0:
-                    rprint(f"[bold green]✓[/bold green] Valid legacy BoLoCo dataset")
-                else:
-                    rprint(f"[yellow]⚠[/yellow] Legacy dataset with issues")
-                rprint(f"  Valid lines: {valid_lines}")
-                rprint(f"  Invalid lines: {invalid_lines}")
-            else:
-                status = "✓ Valid" if invalid_lines == 0 else "⚠ Has issues"
-                print(f"{status} legacy BoLoCo dataset")
-                print(f"  Valid lines: {valid_lines}")
-                print(f"  Invalid lines: {invalid_lines}")
-        else:
-            raise ValueError(f"Unsupported file format: {file_path.suffix}")
-            
-    except Exception as e:
-        if RICH_AVAILABLE:
-            rprint(f"[bold red]Error:[/bold red] {e}")
-        else:
-            print(f"Error: {e}")
-        sys.exit(1)
 
 
 def create_parser():
@@ -459,14 +517,11 @@ def create_parser():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Generate a new dataset
-  python -m boloco.modern_cli generate --max-tokens 7 --output-dir ./data
+  # Generate a new dataset in JSON format
+  python -m boloco.cli generate --max-tokens 7 --output-dir ./data --format json
 
-  # Convert legacy format
-  python -m boloco.modern_cli convert legacy_file.txt modern_file.jsonl
-
-  # Validate a dataset
-  python -m boloco.modern_cli validate dataset.json
+  # Generate with specific parameters
+  python -m boloco.cli generate --max-tokens 10 --error-ratio 0.1 --format all
         """
     )
     
@@ -488,7 +543,7 @@ Examples:
                            help="Random seed for reproducibility")
     gen_parser.add_argument("--output-dir", type=str, default="./data",
                            help="Output directory for generated dataset")
-    gen_parser.add_argument("--format", choices=["json", "jsonl", "legacy", "hf", "all"],
+    gen_parser.add_argument("--format", choices=["json", "jsonl", "hf", "all"],
                            default="all", help="Output format(s)")
     gen_parser.add_argument("--name", type=str, default="boloco-enhanced",
                            help="Dataset name")
@@ -496,22 +551,7 @@ Examples:
                            help="Dataset version")
     gen_parser.set_defaults(func=cmd_generate)
     
-    # Convert command  
-    conv_parser = subparsers.add_parser("convert", help="Convert legacy format to enhanced")
-    conv_parser.add_argument("input_file", help="Input legacy format file")
-    conv_parser.add_argument("output_path", help="Output path for enhanced format")
-    conv_parser.add_argument("--format", choices=["json", "jsonl", "hf"],
-                            default="jsonl", help="Output format")
-    conv_parser.add_argument("--create-card", action="store_true",
-                            help="Create dataset card")
-    conv_parser.set_defaults(func=cmd_convert)
-    
-    # Validate command
-    val_parser = subparsers.add_parser("validate", help="Validate a dataset file")
-    val_parser.add_argument("file_path", help="Path to dataset file")
-    val_parser.add_argument("--verbose", action="store_true",
-                           help="Show detailed validation errors")
-    val_parser.set_defaults(func=cmd_validate)
+
     
     return parser
 

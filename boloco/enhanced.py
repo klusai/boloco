@@ -118,28 +118,7 @@ class BoLoCoExample:
             "created_at": self.created_at
         }
     
-    def to_legacy_format(self) -> str:
-        """Convert to legacy BoLoCo format for backward compatibility."""
-        return f"<s> {self.expression} <eval/> {self.evaluation} </s>"
-    
-    @classmethod
-    def from_legacy_format(cls, legacy_line: str) -> "BoLoCoExample":
-        """Create from legacy BoLoCo format."""
-        # Parse legacy format: "<s> expression <eval/> result </s>"
-        parts = legacy_line.strip().split()
-        if len(parts) < 4 or parts[0] != "<s>" or parts[-1] != "</s>":
-            raise ValueError(f"Invalid legacy format: {legacy_line}")
-        
-        eval_idx = parts.index("<eval/>")
-        expression_tokens = parts[1:eval_idx]
-        expression = " ".join(expression_tokens)
-        evaluation = parts[eval_idx + 1]
-        
-        return cls(
-            expression=expression,
-            evaluation=evaluation,
-            tokens=expression_tokens
-        )
+
 
 
 class BoLoCoDataset:
@@ -271,22 +250,7 @@ class BoLoCoDataset:
         
         logger.info(f"Saved complete dataset to {output_path}")
     
-    def save_legacy_format(self, output_dir: Union[str, Path]):
-        """Save in legacy BoLoCo format for backward compatibility."""
-        output_dir = Path(output_dir)
-        output_dir.mkdir(parents=True, exist_ok=True)
-        
-        for split_name, examples in self.splits.items():
-            if not examples:
-                continue
-                
-            file_path = output_dir / f"boloco-{split_name}-legacy.txt"
-            with open(file_path, "w", encoding="utf-8") as f:
-                for example in examples:
-                    f.write(example.to_legacy_format() + "\n")
-            
-            logger.info(f"Saved {len(examples)} examples in legacy format to {file_path}")
-    
+
     def to_huggingface_dataset(self) -> Optional["DatasetDict"]:
         """Convert to HuggingFace DatasetDict."""
         if not HF_AVAILABLE:
@@ -503,45 +467,3 @@ This dataset was generated using the BoLoCo toolkit with the following configura
         return "\n".join(stats_text)
 
 
-def convert_legacy_to_enhanced(
-    legacy_file: Union[str, Path],
-    output_path: Union[str, Path],
-    format: str = "jsonl"
-) -> BoLoCoDataset:
-    """
-    Convert legacy BoLoCo format to enhanced format.
-    
-    Args:
-        legacy_file: Path to legacy format file
-        output_path: Output path for enhanced format
-        format: Output format ("jsonl", "json", or "hf")
-    
-    Returns:
-        BoLoCoDataset instance
-    """
-    legacy_file = Path(legacy_file)
-    dataset = BoLoCoDataset(name=f"boloco-converted-{legacy_file.stem}")
-    
-    with open(legacy_file, "r", encoding="utf-8") as f:
-        for line_num, line in enumerate(f, 1):
-            line = line.strip()
-            if not line:
-                continue
-            
-            try:
-                example = BoLoCoExample.from_legacy_format(line)
-                dataset.add_example(example, "train")  # Default to train split
-            except ValueError as e:
-                logger.warning(f"Skipping invalid line {line_num}: {e}")
-    
-    # Save in requested format
-    if format == "jsonl":
-        dataset.save_jsonl(output_path)
-    elif format == "json":
-        dataset.save_json(output_path)
-    elif format == "hf" and HF_AVAILABLE:
-        hf_dataset = dataset.to_huggingface_dataset()
-        hf_dataset.save_to_disk(output_path)
-    
-    logger.info(f"Converted {len(dataset.splits['train'])} examples from {legacy_file}")
-    return dataset
