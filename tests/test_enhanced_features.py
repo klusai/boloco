@@ -1,22 +1,17 @@
-#!/usr/bin/env python3
 """
-Test script for BoLoCo Enhanced features.
+Test suite for BoLoCo Enhanced features.
 
-This script demonstrates the enhanced functionality including:
+This module tests the enhanced functionality including:
 - Enhanced data formats with rich metadata
 - HuggingFace integration
-- Format conversion capabilities
-- Validation features
+- File operations and dataset creation
+- CLI configuration validation
 """
 
 import tempfile
 import json
 from pathlib import Path
-import sys
-import os
-
-# Add the boloco package to the path for testing
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "."))
+import pytest
 
 def test_enhanced_example_creation():
     """Test creating an enhanced BoLoCo example."""

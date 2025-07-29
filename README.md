@@ -29,26 +29,34 @@ BoLoCo is an **enhanced toolkit** for generating Boolean logic expression datase
 
 ## 📦 **Installation**
 
-### **Quick Start (Basic)**
+### **Using Poetry (Recommended)**
 ```bash
 git clone https://github.com/klusai/boloco.git
 cd boloco
-pip install -e .
+poetry install  # Basic installation
 ```
 
-### **Enhanced Features (Recommended)**
+### **Enhanced Features**
 ```bash
-pip install -e ".[enhanced]"  # Adds HuggingFace + Rich CLI
+poetry install --extras enhanced  # Adds HuggingFace + Rich CLI
 ```
 
 ### **All Features**
 ```bash
-pip install -e ".[full]"  # Includes transformers for advanced features
+poetry install --extras full  # Includes transformers for advanced features
 ```
 
-### **Development**
+### **Development Setup**
 ```bash
-pip install -e ".[dev]"  # All features + development tools
+poetry install --with dev  # All development tools included
+make dev-setup             # Complete development environment
+```
+
+### **Using pip (Alternative)**
+```bash
+pip install boloco                    # From PyPI (when published)
+pip install "boloco[enhanced]"        # With enhanced features
+pip install "boloco[full]"            # With all features
 ```
 
 ## 🚀 **Quick Start Examples**
@@ -69,7 +77,7 @@ python3 -m boloco.cli generate \
 # Generate with all formats
 python3 -m boloco.cli generate --max-tokens 5 --output-dir ./data --format all
 
-# Note: After installation with 'pip install -e .', you can also use 'boloco' directly
+# Note: After installation with Poetry, you can also use 'poetry run boloco' or just 'boloco' directly
 ```
 
 
@@ -318,13 +326,16 @@ Run the comprehensive test suite:
 
 ```bash
 # Run all tests
-python3 test_modern_features.py
+make test                    # or poetry run pytest tests/
 
-# Run only tests
-python3 test_modern_features.py --test
+# Run tests with verbose output
+make test-verbose           # or poetry run pytest tests/ -vv
 
-# Run only demo
-python3 test_modern_features.py --demo
+# Run with coverage
+make test-coverage          # Generate coverage reports
+
+# Quick demo
+make demo                   # or poetry run boloco generate --max-tokens 3 --format json
 ```
 
 **Current Test Status**: 4/5 tests passing ✅
@@ -366,20 +377,25 @@ We welcome contributions! The modern codebase is designed for extensibility:
 ```bash
 git clone https://github.com/klusai/boloco.git
 cd boloco
-pip install -e ".[dev]"  # Includes all dev dependencies
+make dev-setup              # Complete setup with pre-commit hooks
 
 # Run tests
-python3 test_modern_features.py
+make test                   # or poetry run pytest tests/
+
+# Run quality checks
+make quality               # Format, lint, and type-check
 
 # Generate sample data for testing
-python3 -m boloco.cli generate --max-tokens 5 --output-dir ./test_data
+make demo                  # Quick demo
+make run-cli              # Full CLI demo
 ```
 
 ### **Architecture Overview**
-- `boloco/boloco.py` - Original core logic (unchanged)
 - `boloco/enhanced.py` - Enhanced data structures and I/O
 - `boloco/cli.py` - Enhanced CLI interface
-- `test_modern_features.py` - Comprehensive test suite
+- `tests/` - Comprehensive test suite with pytest
+- `pyproject.toml` - Poetry configuration and dependencies
+- `Makefile` - Development workflow automation
 
 ## 📈 **Streamlined & Focused**
 
@@ -389,12 +405,49 @@ python3 -m boloco.cli generate --max-tokens 5 --output-dir ./test_data
 - **Rich Metadata**: Comprehensive analysis and statistics
 - **Easy Integration**: Direct compatibility with ML workflows
 
+## 🛠️ **Development Workflow**
+
+BoLoCo uses **Poetry** for modern Python dependency management and **pytest** for testing:
+
+### **Common Commands**
+```bash
+make help                   # Show all available commands
+make install                # Install basic dependencies
+make install-dev            # Install with development tools
+make test                   # Run test suite
+make lint                   # Check code quality
+make format                 # Format code
+make build                  # Build distribution packages
+make clean                  # Clean build artifacts
+```
+
+### **Poetry Commands**
+```bash
+poetry install              # Install dependencies
+poetry add <package>        # Add new dependency
+poetry remove <package>     # Remove dependency
+poetry update               # Update dependencies
+poetry run <command>        # Run command in virtual environment
+poetry shell               # Activate virtual environment
+poetry build               # Build package
+poetry publish             # Publish to PyPI
+```
+
+### **Quality & Testing**
+```bash
+poetry run black .         # Format code
+poetry run isort .          # Sort imports
+poetry run flake8 .         # Lint code
+poetry run mypy boloco      # Type checking
+poetry run pytest tests/   # Run tests
+```
+
 ## 📚 **Documentation & Resources**
 
 - **Enhanced API**: See `boloco/enhanced.py` for full API
-- **CLI Reference**: `boloco --help` for all commands
-
-- **Test Examples**: `test_modern_features.py` for usage patterns
+- **CLI Reference**: `poetry run boloco --help` for all commands
+- **Development**: `make help` for development workflow
+- **Test Examples**: `tests/` for usage patterns
 - **Generated Cards**: Auto-created README.md files for datasets
 
 ## 🔍 **Troubleshooting**
@@ -413,9 +466,10 @@ A: Install with `pip install rich` or use `pip install -e ".[enhanced]"`
 
 
 ### **Getting Help**
-- Check test suite: `python3 test_modern_features.py --demo`
-- Validate setup: `python3 -m boloco.cli generate --max-tokens 3 --output-dir ./test`
+- Check test suite: `make test` or `poetry run pytest tests/`
+- Quick demo: `make demo` or `poetry run boloco generate --max-tokens 3 --output-dir ./test`
 - Review logs: Enhanced CLI provides detailed error messages
+- All commands: `make help` for available development commands
 
 ## 📄 **License**
 
