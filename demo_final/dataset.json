@@ -1,0 +1,415 @@
+{
+  "name": "boloco-readme-demo",
+  "version": "2.0.0",
+  "description": "Boolean Logic Expression Dataset with Enhanced Metadata",
+  "authors": [
+    "BoLoCo Contributors"
+  ],
+  "license": "MIT",
+  "created_at": "2025-07-29T05:03:31.593522",
+  "metadata": {
+    "format_version": "2.0",
+    "generation_config": {
+      "max_tokens": 3,
+      "error_ratio": 0.05,
+      "train_ratio": 0.7,
+      "validate_ratio": 0.15,
+      "test_ratio": 0.15,
+      "seed": 42,
+      "name": "boloco-readme-demo",
+      "version": "2.0.0",
+      "description": "Boolean Logic Expression Dataset with Enhanced Metadata",
+      "authors": [
+        "BoLoCo Contributors"
+      ],
+      "license": "MIT"
+    },
+    "statistics": {
+      "train": {
+        "total_examples": 0,
+        "true_evaluations": 0,
+        "false_evaluations": 0,
+        "error_evaluations": 0,
+        "avg_token_count": 0,
+        "avg_complexity": 0,
+        "max_nesting_depth": 0,
+        "operator_distribution": {
+          "AND": 0,
+          "OR": 0,
+          "NOT": 0
+        }
+      },
+      "validation": {
+        "total_examples": 0,
+        "true_evaluations": 0,
+        "false_evaluations": 0,
+        "error_evaluations": 0,
+        "avg_token_count": 0,
+        "avg_complexity": 0,
+        "max_nesting_depth": 0,
+        "operator_distribution": {
+          "AND": 0,
+          "OR": 0,
+          "NOT": 0
+        }
+      },
+      "test": {
+        "total_examples": 0,
+        "true_evaluations": 0,
+        "false_evaluations": 0,
+        "error_evaluations": 0,
+        "avg_token_count": 0,
+        "avg_complexity": 0,
+        "max_nesting_depth": 0,
+        "operator_distribution": {
+          "AND": 0,
+          "OR": 0,
+          "NOT": 0
+        }
+      }
+    },
+    "provenance": {
+      "created_at": "2025-07-29T05:03:31.593522",
+      "tool": "boloco-modern",
+      "version": "2.0.0"
+    }
+  },
+  "splits": {
+    "train": [
+      {
+        "expression": "NOT F",
+        "evaluation": "T",
+        "tokens": [
+          "NOT",
+          "F"
+        ],
+        "metadata": {
+          "token_count": 2,
+          "operator_count": 1,
+          "literal_count": 1,
+          "nesting_depth": 0,
+          "has_negation": true,
+          "is_error": false,
+          "complexity_score": 6
+        },
+        "reasoning_steps": [],
+        "error_type": null,
+        "created_at": "2025-07-29T05:03:31.593948"
+      },
+      {
+        "expression": "( F )",
+        "evaluation": "F",
+        "tokens": [
+          "(",
+          "F",
+          ")"
+        ],
+        "metadata": {
+          "token_count": 3,
+          "operator_count": 0,
+          "literal_count": 1,
+          "nesting_depth": 1,
+          "has_negation": false,
+          "is_error": false,
+          "complexity_score": 6
+        },
+        "reasoning_steps": [],
+        "error_type": null,
+        "created_at": "2025-07-29T05:03:31.593968"
+      },
+      {
+        "expression": "NOT T",
+        "evaluation": "F",
+        "tokens": [
+          "NOT",
+          "T"
+        ],
+        "metadata": {
+          "token_count": 2,
+          "operator_count": 1,
+          "literal_count": 1,
+          "nesting_depth": 0,
+          "has_negation": true,
+          "is_error": false,
+          "complexity_score": 6
+        },
+        "reasoning_steps": [],
+        "error_type": null,
+        "created_at": "2025-07-29T05:03:31.593864"
+      },
+      {
+        "expression": "NOT NOT T",
+        "evaluation": "T",
+        "tokens": [
+          "NOT",
+          "NOT",
+          "T"
+        ],
+        "metadata": {
+          "token_count": 3,
+          "operator_count": 2,
+          "literal_count": 1,
+          "nesting_depth": 0,
+          "has_negation": true,
+          "is_error": false,
+          "complexity_score": 9
+        },
+        "reasoning_steps": [],
+        "error_type": null,
+        "created_at": "2025-07-29T05:03:31.593839"
+      },
+      {
+        "expression": "( T )",
+        "evaluation": "T",
+        "tokens": [
+          "(",
+          "T",
+          ")"
+        ],
+        "metadata": {
+          "token_count": 3,
+          "operator_count": 0,
+          "literal_count": 1,
+          "nesting_depth": 1,
+          "has_negation": false,
+          "is_error": false,
+          "complexity_score": 6
+        },
+        "reasoning_steps": [],
+        "error_type": null,
+        "created_at": "2025-07-29T05:03:31.593779"
+      },
+      {
+        "expression": "F AND T",
+        "evaluation": "F",
+        "tokens": [
+          "F",
+          "AND",
+          "T"
+        ],
+        "metadata": {
+          "token_count": 3,
+          "operator_count": 1,
+          "literal_count": 2,
+          "nesting_depth": 0,
+          "has_negation": false,
+          "is_error": false,
+          "complexity_score": 5
+        },
+        "reasoning_steps": [],
+        "error_type": null,
+        "created_at": "2025-07-29T05:03:31.593853"
+      },
+      {
+        "expression": "NOT NOT F",
+        "evaluation": "F",
+        "tokens": [
+          "NOT",
+          "NOT",
+          "F"
+        ],
+        "metadata": {
+          "token_count": 3,
+          "operator_count": 2,
+          "literal_count": 1,
+          "nesting_depth": 0,
+          "has_negation": true,
+          "is_error": false,
+          "complexity_score": 9
+        },
+        "reasoning_steps": [],
+        "error_type": null,
+        "created_at": "2025-07-29T05:03:31.593888"
+      },
+      {
+        "expression": "T OR F",
+        "evaluation": "T",
+        "tokens": [
+          "T",
+          "OR",
+          "F"
+        ],
+        "metadata": {
+          "token_count": 3,
+          "operator_count": 1,
+          "literal_count": 2,
+          "nesting_depth": 0,
+          "has_negation": false,
+          "is_error": false,
+          "complexity_score": 5
+        },
+        "reasoning_steps": [],
+        "error_type": null,
+        "created_at": "2025-07-29T05:03:31.593805"
+      },
+      {
+        "expression": "T AND F",
+        "evaluation": "F",
+        "tokens": [
+          "T",
+          "AND",
+          "F"
+        ],
+        "metadata": {
+          "token_count": 3,
+          "operator_count": 1,
+          "literal_count": 2,
+          "nesting_depth": 0,
+          "has_negation": false,
+          "is_error": false,
+          "complexity_score": 5
+        },
+        "reasoning_steps": [],
+        "error_type": null,
+        "created_at": "2025-07-29T05:03:31.593901"
+      },
+      {
+        "expression": "F AND F",
+        "evaluation": "F",
+        "tokens": [
+          "F",
+          "AND",
+          "F"
+        ],
+        "metadata": {
+          "token_count": 3,
+          "operator_count": 1,
+          "literal_count": 2,
+          "nesting_depth": 0,
+          "has_negation": false,
+          "is_error": false,
+          "complexity_score": 5
+        },
+        "reasoning_steps": [],
+        "error_type": null,
+        "created_at": "2025-07-29T05:03:31.593824"
+      },
+      {
+        "expression": "T",
+        "evaluation": "T",
+        "tokens": [
+          "T"
+        ],
+        "metadata": {
+          "token_count": 1,
+          "operator_count": 0,
+          "literal_count": 1,
+          "nesting_depth": 0,
+          "has_negation": false,
+          "is_error": false,
+          "complexity_score": 1
+        },
+        "reasoning_steps": [],
+        "error_type": null,
+        "created_at": "2025-07-29T05:03:31.593925"
+      }
+    ],
+    "validation": [
+      {
+        "expression": "T OR T",
+        "evaluation": "T",
+        "tokens": [
+          "T",
+          "OR",
+          "T"
+        ],
+        "metadata": {
+          "token_count": 3,
+          "operator_count": 1,
+          "literal_count": 2,
+          "nesting_depth": 0,
+          "has_negation": false,
+          "is_error": false,
+          "complexity_score": 5
+        },
+        "reasoning_steps": [],
+        "error_type": null,
+        "created_at": "2025-07-29T05:03:31.593877"
+      },
+      {
+        "expression": "T AND T",
+        "evaluation": "T",
+        "tokens": [
+          "T",
+          "AND",
+          "T"
+        ],
+        "metadata": {
+          "token_count": 3,
+          "operator_count": 1,
+          "literal_count": 2,
+          "nesting_depth": 0,
+          "has_negation": false,
+          "is_error": false,
+          "complexity_score": 5
+        },
+        "reasoning_steps": [],
+        "error_type": null,
+        "created_at": "2025-07-29T05:03:31.593937"
+      }
+    ],
+    "test": [
+      {
+        "expression": "F",
+        "evaluation": "F",
+        "tokens": [
+          "F"
+        ],
+        "metadata": {
+          "token_count": 1,
+          "operator_count": 0,
+          "literal_count": 1,
+          "nesting_depth": 0,
+          "has_negation": false,
+          "is_error": false,
+          "complexity_score": 1
+        },
+        "reasoning_steps": [],
+        "error_type": null,
+        "created_at": "2025-07-29T05:03:31.593958"
+      },
+      {
+        "expression": "F OR F",
+        "evaluation": "F",
+        "tokens": [
+          "F",
+          "OR",
+          "F"
+        ],
+        "metadata": {
+          "token_count": 3,
+          "operator_count": 1,
+          "literal_count": 2,
+          "nesting_depth": 0,
+          "has_negation": false,
+          "is_error": false,
+          "complexity_score": 5
+        },
+        "reasoning_steps": [],
+        "error_type": null,
+        "created_at": "2025-07-29T05:03:31.593913"
+      },
+      {
+        "expression": "F OR T",
+        "evaluation": "T",
+        "tokens": [
+          "F",
+          "OR",
+          "T"
+        ],
+        "metadata": {
+          "token_count": 3,
+          "operator_count": 1,
+          "literal_count": 2,
+          "nesting_depth": 0,
+          "has_negation": false,
+          "is_error": false,
+          "complexity_score": 5
+        },
+        "reasoning_steps": [],
+        "error_type": null,
+        "created_at": "2025-07-29T05:03:31.593745"
+      }
+    ]
+  }
+}
