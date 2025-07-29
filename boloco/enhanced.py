@@ -1,7 +1,7 @@
 """
-Modern data formats and HuggingFace integration for BoLoCo.
+Enhanced data formats and HuggingFace integration for BoLoCo.
 
-This module provides modern JSON/JSONL formats, comprehensive metadata tracking,
+This module provides JSON/JSONL formats, comprehensive metadata tracking,
 and seamless integration with HuggingFace datasets ecosystem.
 """
 
@@ -21,12 +21,12 @@ except ImportError:
     HF_AVAILABLE = False
     Dataset = DatasetDict = Features = Value = Sequence = None
 
-logger = logging.getLogger("boloco.modern")
+logger = logging.getLogger("boloco.enhanced")
 
 
-class ModernBoLoCoExample:
+class BoLoCoExample:
     """
-    Modern representation of a Boolean logic expression example with rich metadata.
+    Enhanced representation of a Boolean logic expression example with rich metadata.
     """
     
     def __init__(
@@ -123,7 +123,7 @@ class ModernBoLoCoExample:
         return f"<s> {self.expression} <eval/> {self.evaluation} </s>"
     
     @classmethod
-    def from_legacy_format(cls, legacy_line: str) -> "ModernBoLoCoExample":
+    def from_legacy_format(cls, legacy_line: str) -> "BoLoCoExample":
         """Create from legacy BoLoCo format."""
         # Parse legacy format: "<s> expression <eval/> result </s>"
         parts = legacy_line.strip().split()
@@ -142,9 +142,9 @@ class ModernBoLoCoExample:
         )
 
 
-class ModernBoLoCoDataset:
+class BoLoCoDataset:
     """
-    Modern dataset container with comprehensive metadata and format support.
+    Enhanced dataset container with comprehensive metadata and format support.
     """
     
     def __init__(
@@ -174,19 +174,19 @@ class ModernBoLoCoDataset:
             "statistics": {},
             "provenance": {
                 "created_at": self.created_at,
-                "tool": "boloco-modern",
+                "tool": "boloco-enhanced",
                 "version": version
             }
         }
     
-    def add_example(self, example: ModernBoLoCoExample, split: str = "train"):
+    def add_example(self, example: BoLoCoExample, split: str = "train"):
         """Add an example to the specified split."""
         if split not in self.splits:
             raise ValueError(f"Invalid split: {split}. Must be one of {list(self.splits.keys())}")
         
         self.splits[split].append(example)
     
-    def add_examples(self, examples: List[ModernBoLoCoExample], split: str = "train"):
+    def add_examples(self, examples: List[BoLoCoExample], split: str = "train"):
         """Add multiple examples to the specified split."""
         for example in examples:
             self.add_example(example, split)
@@ -215,7 +215,7 @@ class ModernBoLoCoDataset:
         
         self.metadata["statistics"] = stats
     
-    def _compute_operator_distribution(self, examples: List[ModernBoLoCoExample]) -> Dict[str, int]:
+    def _compute_operator_distribution(self, examples: List[BoLoCoExample]) -> Dict[str, int]:
         """Compute distribution of operators across examples."""
         operators = ["AND", "OR", "NOT"]
         distribution = {op: 0 for op in operators}
@@ -503,24 +503,24 @@ This dataset was generated using the BoLoCo toolkit with the following configura
         return "\n".join(stats_text)
 
 
-def convert_legacy_to_modern(
+def convert_legacy_to_enhanced(
     legacy_file: Union[str, Path],
     output_path: Union[str, Path],
     format: str = "jsonl"
-) -> ModernBoLoCoDataset:
+) -> BoLoCoDataset:
     """
-    Convert legacy BoLoCo format to modern format.
+    Convert legacy BoLoCo format to enhanced format.
     
     Args:
         legacy_file: Path to legacy format file
-        output_path: Output path for modern format
+        output_path: Output path for enhanced format
         format: Output format ("jsonl", "json", or "hf")
     
     Returns:
-        ModernBoLoCoDataset instance
+        BoLoCoDataset instance
     """
     legacy_file = Path(legacy_file)
-    dataset = ModernBoLoCoDataset(name=f"boloco-converted-{legacy_file.stem}")
+    dataset = BoLoCoDataset(name=f"boloco-converted-{legacy_file.stem}")
     
     with open(legacy_file, "r", encoding="utf-8") as f:
         for line_num, line in enumerate(f, 1):
@@ -529,7 +529,7 @@ def convert_legacy_to_modern(
                 continue
             
             try:
-                example = ModernBoLoCoExample.from_legacy_format(line)
+                example = BoLoCoExample.from_legacy_format(line)
                 dataset.add_example(example, "train")  # Default to train split
             except ValueError as e:
                 logger.warning(f"Skipping invalid line {line_num}: {e}")

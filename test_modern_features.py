@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Test script for BoLoCo Enhanced modern features.
+Test script for BoLoCo Enhanced features.
 
-This script demonstrates the new modern functionality including:
-- Modern data formats with rich metadata
+This script demonstrates the enhanced functionality including:
+- Enhanced data formats with rich metadata
 - HuggingFace integration
 - Format conversion capabilities
 - Validation features
@@ -18,14 +18,14 @@ import os
 # Add the boloco package to the path for testing
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "."))
 
-def test_modern_example_creation():
-    """Test creating a modern BoLoCo example."""
-    print("🧪 Testing ModernBoLoCoExample creation...")
+def test_enhanced_example_creation():
+    """Test creating an enhanced BoLoCo example."""
+    print("🧪 Testing BoLoCoExample creation...")
     
-    from boloco.modern_formats import ModernBoLoCoExample
+    from boloco.enhanced import BoLoCoExample
     
     # Create a simple example
-    example = ModernBoLoCoExample(
+    example = BoLoCoExample(
         expression="T OR F",
         evaluation="T",
         tokens=["T", "OR", "F"]
@@ -48,18 +48,18 @@ def test_modern_example_creation():
     legacy_format = example.to_legacy_format()
     assert legacy_format == "<s> T OR F <eval/> T </s>"
     
-    print("✅ ModernBoLoCoExample tests passed!")
+    print("✅ BoLoCoExample tests passed!")
 
 
 def test_legacy_conversion():
-    """Test converting legacy format to modern."""
+    """Test converting legacy format to enhanced."""
     print("🧪 Testing legacy format conversion...")
     
-    from boloco.modern_formats import ModernBoLoCoExample
+    from boloco.enhanced import BoLoCoExample
     
     # Test legacy format parsing
     legacy_line = "<s> ( T AND F ) <eval/> F </s>"
-    example = ModernBoLoCoExample.from_legacy_format(legacy_line)
+    example = BoLoCoExample.from_legacy_format(legacy_line)
     
     assert example.expression == "( T AND F )"
     assert example.evaluation == "F"
@@ -71,14 +71,14 @@ def test_legacy_conversion():
     print("✅ Legacy conversion tests passed!")
 
 
-def test_modern_dataset():
-    """Test modern dataset functionality."""
-    print("🧪 Testing ModernBoLoCoDataset...")
+def test_enhanced_dataset():
+    """Test enhanced dataset functionality."""
+    print("🧪 Testing BoLoCoDataset...")
     
-    from boloco.modern_formats import ModernBoLoCoDataset, ModernBoLoCoExample
+    from boloco.enhanced import BoLoCoDataset, BoLoCoExample
     
     # Create dataset
-    dataset = ModernBoLoCoDataset(
+    dataset = BoLoCoDataset(
         name="test-dataset",
         version="1.0.0",
         description="Test dataset for validation"
@@ -86,10 +86,10 @@ def test_modern_dataset():
     
     # Add some examples
     examples = [
-        ModernBoLoCoExample("T", "T", ["T"]),
-        ModernBoLoCoExample("F", "F", ["F"]),
-        ModernBoLoCoExample("T OR F", "T", ["T", "OR", "F"]),
-        ModernBoLoCoExample("INVALID", "ERR", ["INVALID"], error_type="syntax_error")
+        BoLoCoExample("T", "T", ["T"]),
+        BoLoCoExample("F", "F", ["F"]),
+        BoLoCoExample("T OR F", "T", ["T", "OR", "F"]),
+        BoLoCoExample("INVALID", "ERR", ["INVALID"], error_type="syntax_error")
     ]
     
     for i, example in enumerate(examples):
@@ -105,22 +105,22 @@ def test_modern_dataset():
     assert "train" in stats
     assert stats["train"]["total_examples"] >= 1
     
-    print("✅ ModernBoLoCoDataset tests passed!")
+    print("✅ BoLoCoDataset tests passed!")
 
 
 def test_file_operations():
     """Test file I/O operations."""
     print("🧪 Testing file operations...")
     
-    from boloco.modern_formats import ModernBoLoCoDataset, ModernBoLoCoExample
+    from boloco.enhanced import BoLoCoDataset, BoLoCoExample
     
     # Create a temporary directory
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_path = Path(temp_dir)
         
         # Create dataset
-        dataset = ModernBoLoCoDataset(name="test-file-ops")
-        example = ModernBoLoCoExample("T OR F", "T", ["T", "OR", "F"])
+        dataset = BoLoCoDataset(name="test-file-ops")
+        example = BoLoCoExample("T OR F", "T", ["T", "OR", "F"])
         dataset.add_example(example, "train")
         dataset.update_metadata({"test": True})
         
@@ -170,14 +170,14 @@ def test_huggingface_integration():
         print("⚠️  HuggingFace datasets not available, skipping integration test")
         return
     
-    from boloco.modern_formats import ModernBoLoCoDataset, ModernBoLoCoExample
+    from boloco.enhanced import BoLoCoDataset, BoLoCoExample
     
     # Create dataset
-    dataset = ModernBoLoCoDataset(name="test-hf")
+    dataset = BoLoCoDataset(name="test-hf")
     examples = [
-        ModernBoLoCoExample("T", "T", ["T"]),
-        ModernBoLoCoExample("F", "F", ["F"]),
-        ModernBoLoCoExample("T AND F", "F", ["T", "AND", "F"])
+        BoLoCoExample("T", "T", ["T"]),
+        BoLoCoExample("F", "F", ["F"]),
+        BoLoCoExample("T AND F", "F", ["T", "AND", "F"])
     ]
     
     for example in examples:
@@ -202,11 +202,11 @@ def test_huggingface_integration():
         print("⚠️  HuggingFace integration returned None")
 
 
-def test_modern_cli_config_validation():
+def test_cli_config_validation():
     """Test CLI configuration validation."""
     print("🧪 Testing CLI configuration validation...")
     
-    from boloco.modern_cli import validate_config
+    from boloco.cli import validate_config
     from argparse import Namespace
     
     # Create valid args
@@ -246,12 +246,12 @@ def run_all_tests():
     print("🚀 Running BoLoCo Enhanced test suite...\n")
     
     tests = [
-        test_modern_example_creation,
+        test_enhanced_example_creation,
         test_legacy_conversion,
-        test_modern_dataset,
+        test_enhanced_dataset,
         test_file_operations,
         test_huggingface_integration,
-        test_modern_cli_config_validation
+        test_cli_config_validation
     ]
     
     passed = 0
@@ -277,15 +277,15 @@ def run_all_tests():
     return failed == 0
 
 
-def demo_modern_features():
-    """Demonstrate modern features with example usage."""
+def demo_enhanced_features():
+    """Demonstrate enhanced features with example usage."""
     print("🎯 BoLoCo Enhanced Feature Demo\n")
     
-    from boloco.modern_formats import ModernBoLoCoDataset, ModernBoLoCoExample
+    from boloco.enhanced import BoLoCoDataset, BoLoCoExample
     
     # Create a demo dataset
     print("📝 Creating demo dataset...")
-    dataset = ModernBoLoCoDataset(
+    dataset = BoLoCoDataset(
         name="boloco-demo",
         version="1.0.0",
         description="Demonstration of BoLoCo Enhanced features"
@@ -303,7 +303,7 @@ def demo_modern_features():
     ]
     
     for i, (expr, eval_result, tokens) in enumerate(demo_expressions):
-        example = ModernBoLoCoExample(
+        example = BoLoCoExample(
             expression=expr,
             evaluation=eval_result, 
             tokens=tokens,
@@ -374,8 +374,8 @@ if __name__ == "__main__":
         # Run both by default
         success = run_all_tests()
         print("\n" + "="*50 + "\n")
-        demo_modern_features()
+        demo_enhanced_features()
     elif args.test:
         success = run_all_tests()
     elif args.demo:
-        demo_modern_features()
+        demo_enhanced_features()

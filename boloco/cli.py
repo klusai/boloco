@@ -1,11 +1,11 @@
 """
-Modern CLI interface for BoLoCo with enhanced UX and format support.
+Enhanced CLI interface for BoLoCo with improved UX and format support.
 
-This module provides a modern command-line interface with:
+This module provides an enhanced command-line interface with:
 - Rich output formatting
 - Progress bars and status indicators  
 - Input validation and error handling
-- Support for both legacy and modern formats
+- Support for both legacy and enhanced formats
 - HuggingFace integration
 """
 
@@ -30,21 +30,21 @@ except ImportError:
     Console = Progress = Table = Panel = Text = None
     rprint = print
 
-from .modern_formats import ModernBoLoCoDataset, ModernBoLoCoExample, convert_legacy_to_modern
+from .enhanced import BoLoCoDataset, BoLoCoExample, convert_legacy_to_enhanced
 from .boloco import generate_logic_expressions, split_dataset, generate_error_expressions
 
-logger = logging.getLogger("boloco.modern_cli")
+logger = logging.getLogger("boloco.cli")
 
 
-class ModernBoLoCoGenerator:
-    """Modern dataset generator with enhanced features."""
+class BoLoCoGenerator:
+    """Enhanced dataset generator with rich features."""
     
     def __init__(self, config: Dict[str, Any]):
         self.config = config
         self.console = Console() if RICH_AVAILABLE else None
         
-    def generate_dataset(self) -> ModernBoLoCoDataset:
-        """Generate a modern BoLoCo dataset."""
+    def generate_dataset(self) -> BoLoCoDataset:
+        """Generate an enhanced BoLoCo dataset."""
         if RICH_AVAILABLE:
             self.console.print(Panel(
                 "[bold green]BoLoCo Enhanced Dataset Generation[/bold green]",
@@ -54,7 +54,7 @@ class ModernBoLoCoGenerator:
             print("=== BoLoCo Enhanced Dataset Generation ===")
         
         # Create dataset
-        dataset = ModernBoLoCoDataset(
+        dataset = BoLoCoDataset(
             name=self.config.get("name", "boloco-enhanced"),
             version=self.config.get("version", "2.0.0"),
             description=self.config.get("description", "Boolean Logic Expression Dataset with Enhanced Metadata"),
@@ -91,34 +91,34 @@ class ModernBoLoCoGenerator:
                 errors = generate_error_expressions(valid_expressions, total_errors)
                 
                 # Create examples
-                progress.update(task, description="Creating modern examples...", advance=20)
-                modern_examples = []
+                progress.update(task, description="Creating enhanced examples...", advance=20)
+                enhanced_examples = []
                 
                 # Convert valid expressions
                 for expr in valid_expressions:
                     tokens = expr.split()
-                    example = ModernBoLoCoExample(
+                    example = BoLoCoExample(
                         expression=expr,
                         evaluation="T" if self._evaluate_expression(expr) else "F",
                         tokens=tokens
                     )
-                    modern_examples.append(example)
+                    enhanced_examples.append(example)
                 
                 # Convert error expressions
                 for expr in errors:
                     tokens = expr.split() if isinstance(expr, str) else list(expr)
-                    example = ModernBoLoCoExample(
+                    example = BoLoCoExample(
                         expression=" ".join(tokens) if isinstance(expr, (list, tuple)) else expr,
                         evaluation="ERR",
                         tokens=tokens,
                         error_type="syntax_error"  # Could be enhanced with more specific error types
                     )
-                    modern_examples.append(example)
+                    enhanced_examples.append(example)
                 
                 # Split dataset
                 progress.update(task, description="Splitting dataset...", advance=20)
                 train_examples, val_examples, test_examples = self._split_examples(
-                    modern_examples,
+                    enhanced_examples,
                     self.config["train_ratio"],
                     self.config["validate_ratio"]
                 )
@@ -144,32 +144,32 @@ class ModernBoLoCoGenerator:
             total_errors = int(len(valid_expressions) * self.config["error_ratio"])
             errors = generate_error_expressions(valid_expressions, total_errors)
             
-            print("Creating modern examples...")
-            modern_examples = []
+            print("Creating enhanced examples...")
+            enhanced_examples = []
             
             # Convert expressions (simplified without progress)
             for expr in valid_expressions:
                 tokens = expr.split()
-                example = ModernBoLoCoExample(
+                example = BoLoCoExample(
                     expression=expr,
                     evaluation="T" if self._evaluate_expression(expr) else "F",
                     tokens=tokens
                 )
-                modern_examples.append(example)
+                enhanced_examples.append(example)
             
             for expr in errors:
                 tokens = expr.split() if isinstance(expr, str) else list(expr)
-                example = ModernBoLoCoExample(
+                example = BoLoCoExample(
                     expression=" ".join(tokens) if isinstance(expr, (list, tuple)) else expr,
                     evaluation="ERR",
                     tokens=tokens,
                     error_type="syntax_error"
                 )
-                modern_examples.append(example)
+                enhanced_examples.append(example)
             
             print("Splitting dataset...")
             train_examples, val_examples, test_examples = self._split_examples(
-                modern_examples,
+                enhanced_examples,
                 self.config["train_ratio"],
                 self.config["validate_ratio"]
             )
@@ -189,7 +189,7 @@ class ModernBoLoCoGenerator:
         result = eval_expression(expr)
         return result if isinstance(result, bool) else False
     
-    def _split_examples(self, examples: List[ModernBoLoCoExample], train_ratio: float, val_ratio: float):
+    def _split_examples(self, examples: List[BoLoCoExample], train_ratio: float, val_ratio: float):
         """Split examples into train/val/test sets."""
         import random
         
@@ -215,7 +215,7 @@ class ModernBoLoCoGenerator:
         )
 
 
-def print_dataset_stats(dataset: ModernBoLoCoDataset):
+def print_dataset_stats(dataset: BoLoCoDataset):
     """Print dataset statistics in a formatted way."""
     if RICH_AVAILABLE:
         console = Console()
@@ -306,10 +306,10 @@ def validate_config(args) -> Dict[str, Any]:
 
 
 def cmd_generate(args):
-    """Generate a new dataset in modern format."""
+    """Generate a new dataset in enhanced format."""
     try:
         config = validate_config(args)
-        generator = ModernBoLoCoGenerator(config)
+        generator = BoLoCoGenerator(config)
         dataset = generator.generate_dataset()
         
         # Save in requested formats
@@ -350,7 +350,7 @@ def cmd_generate(args):
 
 
 def cmd_convert(args):
-    """Convert legacy format to modern format."""
+    """Convert legacy format to enhanced format."""
     try:
         legacy_file = Path(args.input_file)
         if not legacy_file.exists():
@@ -363,7 +363,7 @@ def cmd_convert(args):
         else:
             print(f"Converting {legacy_file} → {output_path}")
         
-        dataset = convert_legacy_to_modern(legacy_file, output_path, args.format)
+        dataset = convert_legacy_to_enhanced(legacy_file, output_path, args.format)
         
         if args.create_card:
             card_path = output_path.parent / "README.md"
@@ -422,7 +422,7 @@ def cmd_validate(args):
                         continue
                     
                     try:
-                        ModernBoLoCoExample.from_legacy_format(line)
+                        BoLoCoExample.from_legacy_format(line)
                         valid_lines += 1
                     except ValueError:
                         invalid_lines += 1
@@ -455,7 +455,7 @@ def cmd_validate(args):
 def create_parser():
     """Create the argument parser for the modern CLI."""
     parser = argparse.ArgumentParser(
-        description="BoLoCo Enhanced: Modern Boolean Logic Dataset Generator",
+        description="BoLoCo Enhanced: Boolean Logic Dataset Generator",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -497,9 +497,9 @@ Examples:
     gen_parser.set_defaults(func=cmd_generate)
     
     # Convert command  
-    conv_parser = subparsers.add_parser("convert", help="Convert legacy format to modern")
+    conv_parser = subparsers.add_parser("convert", help="Convert legacy format to enhanced")
     conv_parser.add_argument("input_file", help="Input legacy format file")
-    conv_parser.add_argument("output_path", help="Output path for modern format")
+    conv_parser.add_argument("output_path", help="Output path for enhanced format")
     conv_parser.add_argument("--format", choices=["json", "jsonl", "hf"],
                             default="jsonl", help="Output format")
     conv_parser.add_argument("--create-card", action="store_true",
@@ -517,7 +517,7 @@ Examples:
 
 
 def main():
-    """Main entry point for the modern CLI."""
+    """Main entry point for the enhanced CLI."""
     parser = create_parser()
     args = parser.parse_args()
     

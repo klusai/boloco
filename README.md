@@ -1,23 +1,23 @@
 # BoLoCo: Boolean Logic Expression Generator
 
-## 🚀 **Version 2.0 - Now Enhanced with Modern AI/ML Integration**
+## 🚀 **Version 2.0 - Enhanced with AI/ML Integration**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![Tests Passing](https://img.shields.io/badge/tests-5%2F6%20passing-brightgreen.svg)](#testing)
 
-BoLoCo is a **modern toolkit** for generating Boolean logic expression datasets with rich metadata, designed for training and evaluating logical reasoning capabilities in AI models. Version 2.0 introduces comprehensive modern data formats, HuggingFace integration, and enhanced metadata tracking while maintaining full backward compatibility.
+BoLoCo is an **enhanced toolkit** for generating Boolean logic expression datasets with rich metadata, designed for training and evaluating logical reasoning capabilities in AI models. Version 2.0 introduces comprehensive data formats, HuggingFace integration, and enhanced metadata tracking while maintaining full backward compatibility.
 
 ## ✨ **What's New in Version 2.0**
 
-- 🎯 **Modern JSON/JSONL Formats**: Rich structured data with comprehensive metadata
+- 🎯 **JSON/JSONL Formats**: Rich structured data with comprehensive metadata
 - 📊 **Enhanced Metadata**: Automatic complexity scoring, operator analysis, nesting depth
-- 🔄 **Format Conversion**: Seamless bidirectional legacy ↔ modern format conversion
+- 🔄 **Format Conversion**: Seamless bidirectional legacy ↔ enhanced format conversion
 - 📝 **Auto-Generated Dataset Cards**: HuggingFace-compatible documentation
 - ✅ **Input Validation**: Comprehensive error checking and dataset validation
 - 🎨 **Rich CLI Experience**: Beautiful output with progress indicators (optional)
 - 🤗 **HuggingFace Ready**: Direct compatibility with `datasets` library
-- 🔀 **Dual CLI**: Modern interface + legacy backward compatibility
+- 🔀 **Dual CLI**: Enhanced interface + legacy backward compatibility
 
 ## 🎯 **Use Cases**
 
@@ -53,26 +53,26 @@ pip install -e ".[dev]"  # All features + development tools
 
 ## 🚀 **Quick Start Examples**
 
-### **Modern CLI (Recommended)**
+### **Enhanced CLI (Recommended)**
 
 ```bash
 # Generate a dataset with rich metadata
-python3 -m boloco.modern_cli generate --max-tokens 5 --output-dir ./data
+python3 -m boloco.cli generate --max-tokens 5 --output-dir ./data
 
 # Generate with specific error ratio and format
-python3 -m boloco.modern_cli generate \
+python3 -m boloco.cli generate \
   --max-tokens 7 \
   --error-ratio 0.1 \
   --output-dir ./my_dataset \
   --format jsonl
 
-# Convert legacy files to modern format
-python3 -m boloco.modern_cli convert old_dataset.txt new_dataset.jsonl --create-card
+# Convert legacy files to enhanced format
+python3 -m boloco.cli convert old_dataset.txt new_dataset.jsonl --create-card
 
 # Validate dataset integrity
-python3 -m boloco.modern_cli validate dataset.json --verbose
+python3 -m boloco.cli validate dataset.json --verbose
 
-# Note: After installation with 'pip install -e .', you can also use 'boloco-modern' directly
+# Note: After installation with 'pip install -e .', you can also use 'boloco-enhanced' directly
 ```
 
 ### **Legacy CLI (Still Supported)**
@@ -80,7 +80,7 @@ python3 -m boloco.modern_cli validate dataset.json --verbose
 python -m boloco.boloco --mode generate --max_tokens 5 --error_ratio 0.05 --dir data
 ```
 
-## 🎯 **Modern Dataset Format**
+## 🎯 **Enhanced Dataset Format**
 
 ### **Example Output (JSONL)**
 ```json
@@ -133,8 +133,8 @@ for example in dataset["train"]:
 
 ### **Programmatic Generation**
 ```python
-from boloco.modern_formats import ModernBoLoCoDataset, ModernBoLoCoExample
-from boloco.modern_cli import ModernBoLoCoGenerator
+from boloco.enhanced import BoLoCoDataset, BoLoCoExample
+from boloco.cli import BoLoCoGenerator
 
 # Configure generation
 config = {
@@ -147,7 +147,7 @@ config = {
 }
 
 # Generate dataset
-generator = ModernBoLoCoGenerator(config)
+generator = BoLoCoGenerator(config)
 dataset = generator.generate_dataset()
 
 # Export in multiple formats
@@ -164,9 +164,9 @@ if hf_dataset:
 
 ## 🔧 **Configuration Options**
 
-### **Modern CLI Parameters**
+### **Enhanced CLI Parameters**
 ```bash
-python3 -m boloco.modern_cli generate \
+python3 -m boloco.cli generate \
   --max-tokens 10 \           # Expression complexity (1-50)
   --error-ratio 0.1 \         # Proportion of error examples (0.0-1.0)
   --train-ratio 0.8 \         # Training split ratio
@@ -194,7 +194,7 @@ python -m boloco.boloco \
 
 ## 📁 **Output Structure**
 
-### **Modern Format Output**
+### **Enhanced Format Output**
 ```
 data/
 ├── dataset.json              # Complete dataset with metadata
@@ -225,7 +225,7 @@ data/mt5/YYYYMMDD-HHMMSS/
 
 ### **Research Workflow**
 ```python
-from boloco.modern_cli import ModernBoLoCoGenerator
+from boloco.cli import BoLoCoGenerator
 
 # Generate research dataset
 config = {
@@ -236,7 +236,7 @@ config = {
     "description": "Boolean logic benchmark for AI reasoning"
 }
 
-generator = ModernBoLoCoGenerator(config)
+generator = BoLoCoGenerator(config)
 dataset = generator.generate_dataset()
 
 # Analyze complexity distribution
@@ -310,25 +310,25 @@ for batch in dataloader:
 ### **Converting Legacy Datasets**
 ```bash
 # Single file conversion
-python3 -m boloco.modern_cli convert legacy_dataset.txt modern_dataset.jsonl --create-card
+python3 -m boloco.cli convert legacy_dataset.txt enhanced_dataset.jsonl --create-card
 
 # Batch conversion  
-find ./old_data -name "*.txt" -exec python3 -m boloco.modern_cli convert {} {}.jsonl \;
+find ./old_data -name "*.txt" -exec python3 -m boloco.cli convert {} {}.jsonl \;
 
 # With dataset card generation
-python3 -m boloco.modern_cli convert legacy_file.txt modern_file.jsonl --create-card
+python3 -m boloco.cli convert legacy_file.txt enhanced_file.jsonl --create-card
 ```
 
 ### **Validation & Quality Checks**
 ```bash
-# Validate modern format
-python3 -m boloco.modern_cli validate dataset.json --verbose
+# Validate enhanced format
+python3 -m boloco.cli validate dataset.json --verbose
 
 # Validate legacy format
-python3 -m boloco.modern_cli validate legacy_dataset.txt --verbose
+python3 -m boloco.cli validate legacy_dataset.txt --verbose
 
 # Batch validation
-find ./datasets -name "*.json" -exec python3 -m boloco.modern_cli validate {} \;
+find ./datasets -name "*.json" -exec python3 -m boloco.cli validate {} \;
 ```
 
 ## 📊 **Dataset Statistics & Analysis**
@@ -370,9 +370,9 @@ python3 test_modern_features.py --demo
 ```
 
 **Current Test Status**: 5/6 tests passing ✅
-- ✅ ModernBoLoCoExample creation
+- ✅ BoLoCoExample creation
 - ✅ Legacy format conversion
-- ✅ ModernBoLoCoDataset functionality
+- ✅ BoLoCoDataset functionality
 - ✅ CLI configuration validation
 - ⚠️ File operations (minor issue with empty statistics display)
 - ⚠️ HuggingFace integration (requires optional dependency)
@@ -415,13 +415,13 @@ pip install -e ".[dev]"  # Includes all dev dependencies
 python3 test_modern_features.py
 
 # Generate sample data for testing
-python3 -m boloco.modern_cli generate --max-tokens 5 --output-dir ./test_data
+python3 -m boloco.cli generate --max-tokens 5 --output-dir ./test_data
 ```
 
 ### **Architecture Overview**
 - `boloco/boloco.py` - Original core logic (unchanged)
-- `boloco/modern_formats.py` - Modern data structures and I/O
-- `boloco/modern_cli.py` - Enhanced CLI interface
+- `boloco/enhanced.py` - Enhanced data structures and I/O
+- `boloco/cli.py` - Enhanced CLI interface
 - `test_modern_features.py` - Comprehensive test suite
 
 ## 📈 **Backward Compatibility**
@@ -434,13 +434,13 @@ python3 -m boloco.modern_cli generate --max-tokens 5 --output-dir ./test_data
 
 ### **Migration Path**
 - **Gradual**: Use both CLIs side by side
-- **Convert**: Transform existing datasets with `python3 -m boloco.modern_cli convert`
-- **Validate**: Check compatibility with `python3 -m boloco.modern_cli validate`
+- **Convert**: Transform existing datasets with `python3 -m boloco.cli convert`
+- **Validate**: Check compatibility with `python3 -m boloco.cli validate`
 
 ## 📚 **Documentation & Resources**
 
-- **Modern API**: See `boloco/modern_formats.py` for full API
-- **CLI Reference**: `boloco-modern --help` for all commands
+- **Enhanced API**: See `boloco/enhanced.py` for full API
+- **CLI Reference**: `boloco-enhanced --help` for all commands
 - **Legacy Documentation**: Original sections preserved below
 - **Test Examples**: `test_modern_features.py` for usage patterns
 - **Generated Cards**: Auto-created README.md files for datasets
@@ -459,12 +459,12 @@ A: Install with `pip install datasets` or use `pip install -e ".[enhanced]"`
 A: Install with `pip install rich` or use `pip install -e ".[enhanced]"`
 
 **Q: "Legacy files not converting"**
-A: Check file format with `python3 -m boloco.modern_cli validate file.txt --verbose`
+A: Check file format with `python3 -m boloco.cli validate file.txt --verbose`
 
 ### **Getting Help**
 - Check test suite: `python3 test_modern_features.py --demo`
-- Validate setup: `python3 -m boloco.modern_cli generate --max-tokens 3 --output-dir ./test`
-- Review logs: Modern CLI provides detailed error messages
+- Validate setup: `python3 -m boloco.cli generate --max-tokens 3 --output-dir ./test`
+- Review logs: Enhanced CLI provides detailed error messages
 
 ## 📄 **License**
 
@@ -483,11 +483,11 @@ python boloco.py --mode generate --max_tokens 5 --dir data
 
 **New way:**
 ```bash
-python3 -m boloco.modern_cli generate --max-tokens 5 --output-dir data
+python3 -m boloco.cli generate --max-tokens 5 --output-dir data
 ```
 
 ### **Key Differences**
-| Legacy | Modern | Benefits |
+| Legacy | Enhanced | Benefits |
 |--------|---------|----------|
 | TXT format | JSON/JSONL | Rich metadata, HF compatible |
 | Basic tokens | Comprehensive analysis | Complexity scoring, statistics |
